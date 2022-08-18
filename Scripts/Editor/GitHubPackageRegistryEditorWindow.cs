@@ -18,9 +18,11 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private string gitHubAccountOwner;
         private string accessToken;
 
+        private bool alreadyDrawn = false;
+
 
         [MenuItem ("Window/GitHub Package Registry Editor Window")]
-        public static void  ShowWindow () {
+        public static void ShowWindow () {
             window = ConfigureWindow();
         }
 
@@ -35,7 +37,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
             return windowInstance;
         }
-
+ 
         private void OnGUI()
         {
             LoadScopeRegistryDataBase();
@@ -118,12 +120,19 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             string[] filePaths = Directory.GetFiles(ScopeRegistryDataBasePath, "*.txt", SearchOption.TopDirectoryOnly);
             foreach (var path in filePaths)
             {
+                Debug.Log("---------------------");
                 StreamReader reader = new StreamReader(path);
+                ShowRegistry();
                 var httpLink = reader.ReadLine();
                 var ownerName = reader.ReadLine();
                 var token = reader.ReadLine();
                 reader.Close();
             }
+        }
+
+        private void ShowRegistry()
+        {
+            
         }
     }
 }
