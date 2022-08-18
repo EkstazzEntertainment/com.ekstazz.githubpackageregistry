@@ -38,6 +38,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void OnGUI()
         {
+            LoadScopeRegistryDataBase();
             RegistryAddition();
         }
 
@@ -99,7 +100,9 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         {
             var fullPath = ScopeRegistryDataBasePath + gitHubAccountOwner + ".txt";
             StreamWriter writer = new StreamWriter(fullPath, true);
-            writer.WriteLine("");
+            writer.WriteLine(httpsRegistryLink);
+            writer.WriteLine(gitHubAccountOwner);
+            writer.WriteLine(accessToken);
             writer.Close();
 
             AssetDatabase.ImportAsset(ScopeRegistryDataBasePath); 
@@ -107,10 +110,20 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void LoadScopeRegistryDataBase()
         {
-            var fullPath = ScopeRegistryDataBasePath + gitHubAccountOwner + ".txt";
-            StreamReader reader = new StreamReader(ScopeRegistryDataBasePath); 
-            Debug.Log(reader.ReadToEnd());
-            reader.Close();
+            if(!Directory.Exists(ScopeRegistryDataBasePath))
+            {
+                return;
+            }
+            
+            string[] filePaths = Directory.GetFiles(ScopeRegistryDataBasePath, "*.txt", SearchOption.TopDirectoryOnly);
+            foreach (var path in filePaths)
+            {
+                StreamReader reader = new StreamReader(path);
+                var httpLink = reader.ReadLine();
+                var ownerName = reader.ReadLine();
+                var token = reader.ReadLine();
+                reader.Close();
+            }
         }
     }
 }
