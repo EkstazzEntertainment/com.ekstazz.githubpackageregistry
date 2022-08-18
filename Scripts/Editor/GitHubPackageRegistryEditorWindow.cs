@@ -19,6 +19,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private string httpsRegistryLink;
         private string gitHubAccountOwner;
         private string accessToken;
+        
+        private bool registriesHaveLoaded = false;
         private List<RegistryInfo> registryInfos = new List<RegistryInfo>();
 
 
@@ -42,12 +44,16 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private void OnEnable()
         {
             LoadScopeRegistryDataBase();
-            DrawAllRegistries();
+            LoadAllRegistriesData();
         }
 
         private void OnGUI()
         {
             RegistryAddition();
+            // if (registriesHaveLoaded)
+            // {
+                DrawAllRegistries();
+            // }
         }
 
         private void RegistryAddition()
@@ -137,17 +143,43 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             }
         }
 
-        private void DrawAllRegistries()
+        private void LoadAllRegistriesData()
         {
             foreach (var registryInfo in registryInfos)
             {
-                DrawRegistry(registryInfo);
+                LoadRegistry(registryInfo);
             }
         }
         
-        private void DrawRegistry(RegistryInfo registryInfo)
+        private void LoadRegistry(RegistryInfo registryInfo)
         {
             Debug.Log(registryInfo.AuthorName);
+        }
+
+
+        private float verticalPosition = 0;
+        private void DrawAllRegistries()
+        {
+            GUILayout.BeginVertical();
+            var scrollView = GUILayout.BeginScrollView(new Vector2(0, verticalPosition));
+            verticalPosition = scrollView.y;
+            
+            foreach (var registryInfo in registryInfos)
+            {
+                GUILayout.Space(30);
+                DrawRegistry(registryInfo);
+            }
+
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+        }
+
+        private void DrawRegistry(RegistryInfo registryInfo)
+        {
+            if (GUILayout.Button("----------------"))
+            {
+
+            }
         }
     }
 }
