@@ -1,6 +1,8 @@
 namespace GitHubRegistryNetworking.Scripts.Editor
 {
+    using System.Collections.Generic;
     using System.IO;
+    using Registries;
     using UnityEditor;
     using UnityEngine;
 
@@ -17,8 +19,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private string httpsRegistryLink;
         private string gitHubAccountOwner;
         private string accessToken;
-
-        private bool alreadyDrawn = false;
+        private List<RegistryInfo> registryInfos = new List<RegistryInfo>();
 
 
         [MenuItem ("Window/GitHub Package Registry Editor Window")]
@@ -37,10 +38,15 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
             return windowInstance;
         }
- 
-        private void OnGUI()
+
+        private void OnEnable()
         {
             LoadScopeRegistryDataBase();
+            DrawAllRegistries();
+        }
+
+        private void OnGUI()
+        {
             RegistryAddition();
         }
 
@@ -109,30 +115,39 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
             AssetDatabase.ImportAsset(ScopeRegistryDataBasePath); 
         }
-
+ 
         private void LoadScopeRegistryDataBase()
         {
             if(!Directory.Exists(ScopeRegistryDataBasePath))
             {
                 return;
             }
-            
+             
             string[] filePaths = Directory.GetFiles(ScopeRegistryDataBasePath, "*.txt", SearchOption.TopDirectoryOnly);
             foreach (var path in filePaths)
             {
                 Debug.Log("---------------------");
                 StreamReader reader = new StreamReader(path);
-                ShowRegistry();
                 var httpLink = reader.ReadLine();
                 var ownerName = reader.ReadLine();
                 var token = reader.ReadLine();
+                var registryInfo = new RegistryInfo { RepositoryLink = httpLink, AuthorName = ownerName, Token = token};
+                registryInfos.Add(registryInfo);
                 reader.Close();
             }
         }
 
-        private void ShowRegistry()
+        private void DrawAllRegistries()
         {
-            
+            foreach (var registryInfo in registryInfos)
+            {
+                DrawRegistry(registryInfo);
+            }
+        }
+        
+        private void DrawRegistry(RegistryInfo registryInfo)
+        {
+            Debug.Log(registryInfo.AuthorName);
         }
     }
 }
