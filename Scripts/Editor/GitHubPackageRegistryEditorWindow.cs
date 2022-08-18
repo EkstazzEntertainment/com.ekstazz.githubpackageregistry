@@ -7,8 +7,11 @@ namespace GitHubRegistryNetworking.Scripts.Editor
     public class GitHubPackageRegistryEditorWindow : EditorWindow
     {
         private const string WindowTitle = "GitHub Package Registry";
-        private const string ScopeRegistryDataBasePath = "Assets/CustomGitHubRegistry.txt";
+        private const string ParentFolder = "Assets";
+        private const string FolderName = "CustomGitHubRegistries";
             
+        private string ScopeRegistryDataBasePath = ParentFolder + "/" + FolderName + "/";
+
         private static EditorWindow window;
 
         private string httpsRegistryLink;
@@ -46,19 +49,56 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             
             if (GUILayout.Button("Add a new GitHub registry"))
             {
-                LoadScopeRegistryDataBase();
+                HandleRegistryAddition();
             }
         }
-
+        
         private void LabelTextPair(string label, ref string variable)
         {
             GUILayout.Label (label, EditorStyles.boldLabel);
             variable = EditorGUILayout.TextField ("", variable);
         }
 
+        private void HandleRegistryAddition()
+        {
+            if (string.IsNullOrWhiteSpace(httpsRegistryLink) 
+                || string.IsNullOrWhiteSpace(ScopeRegistryDataBasePath) 
+                || string.IsNullOrWhiteSpace(accessToken))
+            {
+                return;
+            }
+            
+            var fullPath = ScopeRegistryDataBasePath + gitHubAccountOwner + ".txt";
+            if (File.Exists(fullPath))
+            {
+                Debug.Log("A Scope Registry DataBase exists. No need to make a new one.");
+            }
+            else
+            {
+                if(!Directory.Exists(ScopeRegistryDataBasePath))
+                {
+                    Debug.Log("The Registry Folder does not exist. Creating it!");
+                    CreateTheRegistryFolder();
+                }
+                
+                Debug.Log("No Scope Registry DataBase has been found. Creating a new one.");
+                CreateAScopeRegistryDataBase();
+            }
+            
+            AssetDatabase.Refresh();
+        }
+
+        private void CreateTheRegistryFolder()
+        {
+            string guid = AssetDatabase.CreateFolder(ParentFolder, FolderName);
+            string newFolderPath = AssetDatabase.GUIDToAssetPath(guid);
+            Debug.Log(newFolderPath);
+        }
+
         private void CreateAScopeRegistryDataBase()
         {
-            StreamWriter writer = new StreamWriter(ScopeRegistryDataBasePath, true);
+            var fullPath = ScopeRegistryDataBasePath + gitHubAccountOwner + ".txt";
+            StreamWriter writer = new StreamWriter(fullPath, true);
             writer.WriteLine("");
             writer.Close();
 
@@ -67,6 +107,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void LoadScopeRegistryDataBase()
         {
+            var fullPath = ScopeRegistryDataBasePath + gitHubAccountOwner + ".txt";
             StreamReader reader = new StreamReader(ScopeRegistryDataBasePath); 
             Debug.Log(reader.ReadToEnd());
             reader.Close();
