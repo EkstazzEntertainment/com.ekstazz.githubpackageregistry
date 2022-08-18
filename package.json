@@ -1,0 +1,17 @@
+{
+  "name": "com.ekstazz.githubpackageregistry",
+  "displayName": "Custom GitHub package registry",
+  "version": "1.0.0",
+  "unity": "2020.3",
+  "description": "Custom GitHub package registry",
+  "dependencies": {
+
+  },
+  "repository": "git@github.com:EkstazzEntertainment/com.ekstazz.githubpackageregistry.git",
+  "license": "UNLICENSED",
+  "release": { "branches": [ "develop" ] },
+  "publishConfig": {
+    "registry": "EkstazzPackages"
+  }
+}
+ 
