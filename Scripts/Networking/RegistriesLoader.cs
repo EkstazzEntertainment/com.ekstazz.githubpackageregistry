@@ -55,8 +55,9 @@ namespace GitHubRegistryNetworking.Scripts.Networking
                     package.name,
                     (releases) =>
                     {
-                        loaded = true;
                         package.releases = releases;
+                        package.GetInstalledInfo();
+                        loaded = true;
                     });
                 
                 while (!loaded)

@@ -2,6 +2,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 {
     using System.Collections.Generic;
     using System.IO;
+    using DataTypes;
     using Networking;
     using Registries;
     using UnityEditor;
@@ -243,19 +244,39 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         {
             if (!package.folded)
             {
-                var color = GUI.backgroundColor;
-                GUI.backgroundColor = Color.cyan;
-
                 foreach (var release in package.releases)
                 {
-                    if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
+                    var color = GUI.backgroundColor;
+                    if (package.installedVersion != release.tag_name)
                     {
-                     
+                        GUI.backgroundColor = Color.cyan;
                     }
+                    else
+                    {
+                        GUI.backgroundColor = Color.cyan;
+                    }
+                    
+                    DrawVersionButton(release, package);
+                    
+                    GUI.backgroundColor = color;
                 }
-                 
-                GUI.backgroundColor = color;
             }
+        }
+
+        private void DrawVersionButton(ReleaseInfo release, PackageInfo package)
+        {
+            if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
+            {
+                if (EditorUtility.DisplayDialog($"Install version {release.tag_name}?", "", "Install", "CANCEL!!!"))
+                {
+                    InstallPackageVersion(package, release);
+                }
+            }
+        }
+
+        private void InstallPackageVersion(PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        {
+            
         }
     }
 }

@@ -2,6 +2,7 @@ namespace GitHubRegistryNetworking.Scripts.DataTypes
 {
     using System;
     using System.Collections.Generic;
+    using Editor;
 
     [Serializable]
     public class PackageInfo
@@ -13,6 +14,16 @@ namespace GitHubRegistryNetworking.Scripts.DataTypes
         public string installedVersion = "-1, -1, -1";
         public List<ReleaseInfo> releases = new List<ReleaseInfo>();
         public bool folded = true;
+
+        public void GetInstalledInfo()
+        {
+            var packageHandler = new PackageInfoHandler();
+            installed = packageHandler.CheckIfPackageIsInstalled(name);
+            if (installed)
+            {
+                installedVersion = packageHandler.GetInstalledVersion(name);
+            }
+        }
     }
 
     [Serializable]
