@@ -199,8 +199,10 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             foreach (var package in registryInfo.Packages)
             {
                 DrawPackage(package);
+                DrawPackageVersions(package);
                 GUILayout.Space(5);
             }
+
             GUILayout.EndVertical();
         }
 
@@ -209,7 +211,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
             if (GUILayout.Button(package.description, GUILayout.Height(30), GUILayout.Width(300)))
             {
-                    
+                package.folded = !package.folded;
             }
 
             GUILayout.BeginVertical();
@@ -235,6 +237,25 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 versionTextStyle.normal.textColor = Color.green;
             }
             EditorGUILayout.LabelField(installedInfo, versionTextStyle, GUILayout.ExpandWidth(true));
+        }
+
+        private void DrawPackageVersions(PackageInfo package)
+        {
+            if (!package.folded)
+            {
+                var color = GUI.backgroundColor;
+                GUI.backgroundColor = Color.cyan;
+
+                foreach (var release in package.releases)
+                {
+                    if (GUILayout.Button(release, GUILayout.Width(300)))
+                    {
+                    
+                    }
+                }
+                
+                GUI.backgroundColor = color;
+            }
         }
     }
 }

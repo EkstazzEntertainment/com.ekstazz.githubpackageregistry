@@ -11,6 +11,8 @@ namespace GitHubRegistryNetworking.Scripts.Networking.DataTypes
         public string description;
         public bool installed;
         public string installedVersion = "-1, -1, -1";
+        public List<string> releases = new List<string>();
+        public bool folded = true;
     }
 
     [Serializable]
