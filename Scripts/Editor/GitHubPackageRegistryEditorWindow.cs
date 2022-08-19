@@ -47,6 +47,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void OnEnable()
         {
+            LoadData();
+        }
+ 
+        private void LoadData()
+        {
+            registriesHaveLoaded = false;
             LoadScopeRegistryDataBase();
             registriesLoader.LoadAllRegistriesData(registryInfos, () =>
             {
@@ -77,7 +83,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         
         private void LabelTextPair(string label, ref string variable)
         {
-            GUILayout.Label (label, EditorStyles.boldLabel);
+            GUILayout.Label(label, EditorStyles.boldLabel);
             variable = EditorGUILayout.TextField ("", variable);
         }
 
@@ -139,7 +145,6 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             string[] filePaths = Directory.GetFiles(ScopeRegistryDataBasePath, "*.txt", SearchOption.TopDirectoryOnly);
             foreach (var path in filePaths)
             {
-                Debug.Log("---------------------");
                 StreamReader reader = new StreamReader(path);
                 var httpLink = reader.ReadLine();
                 var ownerName = reader.ReadLine();
@@ -154,14 +159,17 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private float verticalPosition = 0;
         private void DrawAllRegistries()
         {
+            GUILayout.Space(30);
             GUILayout.BeginVertical();
             var scrollView = GUILayout.BeginScrollView(new Vector2(0, verticalPosition));
             verticalPosition = scrollView.y;
             
             foreach (var registryInfo in registryInfos)
             {
-                GUILayout.Space(30);
+                GUILayout.BeginVertical(EditorStyles.helpBox);
                 DrawRegistry(registryInfo);
+                GUILayout.EndVertical();
+                GUILayout.Space(30);
             }
 
             GUILayout.EndScrollView();
@@ -170,9 +178,10 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void DrawRegistry(RegistryInfo registryInfo)
         {
-            if (GUILayout.Button("----------------"))
+            GUILayout.Label(registryInfo.AuthorName, EditorStyles.boldLabel);
+            if (GUILayout.Button("Remove (also packages)", GUILayout.Width(150), GUILayout.Height(30)))
             {
-
+                //remove registries and its packages //todo 
             }
         }
     }
