@@ -10,6 +10,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
     {
         public void SendRequest(string url, List<Header> headers)
         {
+            Debug.Log(url);
             UnityWebRequest uwr = UnityWebRequest.Get(url);
             AddHeadersToRequest(ref uwr, headers);
             uwr.SendWebRequest();

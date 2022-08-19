@@ -158,9 +158,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private void LoadRegistry(RegistryInfo registryInfo)
         {
             Debug.Log(registryInfo.AuthorName);
-            GitHubRequests.GetAllReleasesForPackage(registryInfo.Token, registryInfo.AuthorName, "com.ekstazz.ads");
+            // GitHubRequests.GetAllReleasesForPackage(registryInfo.Token, registryInfo.AuthorName, "com.ekstazz.ads");
+            GitHubRequests.GetAllPackagesForAuthor(
+                registryInfo.Token, 
+                registryInfo.AuthorName);
         }
-
+ 
 
         private float verticalPosition = 0;
         private void DrawAllRegistries()
