@@ -2,6 +2,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 {
     using System.Collections.Generic;
     using System.IO;
+    using Networking.GitHubAPI;
+    using Networking.Requests;
     using Registries;
     using UnityEditor;
     using UnityEngine;
@@ -149,11 +151,14 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             {
                 LoadRegistry(registryInfo);
             }
+
+            registriesHaveLoaded = true; //todo 
         }
-        
+         
         private void LoadRegistry(RegistryInfo registryInfo)
         {
             Debug.Log(registryInfo.AuthorName);
+            GitHubRequests.GetAllReleasesForPackage(registryInfo.Token, registryInfo.AuthorName, "com.ekstazz.ads");
         }
 
 
