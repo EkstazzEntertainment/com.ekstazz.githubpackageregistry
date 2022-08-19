@@ -1,7 +1,7 @@
 namespace GitHubRegistryNetworking.Scripts.Registries
 {
     using System.Collections.Generic;
-    using Networking.DataTypes;
+    using DataTypes;
 
     public class RegistryInfo
     {

@@ -1,4 +1,4 @@
-namespace GitHubRegistryNetworking.Scripts.Networking.DataTypes
+namespace GitHubRegistryNetworking.Scripts.DataTypes
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking.DataTypes
         public string description;
         public bool installed;
         public string installedVersion = "-1, -1, -1";
-        public List<string> releases = new List<string>();
+        public List<ReleaseInfo> releases = new List<ReleaseInfo>();
         public bool folded = true;
     }
 

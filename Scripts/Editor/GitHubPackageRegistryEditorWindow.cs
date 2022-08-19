@@ -6,7 +6,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
     using Registries;
     using UnityEditor;
     using UnityEngine;
-    using PackageInfo = Networking.DataTypes.PackageInfo;
+    using PackageInfo = DataTypes.PackageInfo;
 
 
     public class GitHubPackageRegistryEditorWindow : EditorWindow
@@ -202,7 +202,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 DrawPackageVersions(package);
                 GUILayout.Space(5);
             }
-
+ 
             GUILayout.EndVertical();
         }
 
@@ -238,7 +238,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             }
             EditorGUILayout.LabelField(installedInfo, versionTextStyle, GUILayout.ExpandWidth(true));
         }
-
+ 
         private void DrawPackageVersions(PackageInfo package)
         {
             if (!package.folded)
@@ -248,12 +248,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
                 foreach (var release in package.releases)
                 {
-                    if (GUILayout.Button(release, GUILayout.Width(300)))
+                    if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
                     {
-                    
+                     
                     }
                 }
-                
+                 
                 GUI.backgroundColor = color;
             }
         }

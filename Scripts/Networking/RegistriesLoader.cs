@@ -6,6 +6,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using DataTypes;
     using GitHubAPI;
     using Registries;
+    using UnityEngine;
 
     public class RegistriesLoader
     {
@@ -22,7 +23,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         private async void LoadRegistry(RegistryInfo registryInfo)
         {
             var loaded = false;
-            // GitHubRequests.GetAllReleasesForPackage(registryInfo.Token, registryInfo.AuthorName, "com.ekstazz.ads");
+            
             GitHubRequests.GetAllPackagesForAuthor<List<PackageInfo>>(
                 registryInfo.Token, 
                 registryInfo.AuthorName,
@@ -36,6 +37,33 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             {
                 await Task.Delay(50);
             }
-        } 
+
+            LoadReleasesForPackages(registryInfo);
+        }
+
+        private async void LoadReleasesForPackages(RegistryInfo registryInfo, Action callback = null)
+        {
+            var loaded = false;
+
+            foreach (var package in registryInfo.Packages)
+            {
+                loaded = false;
+                 
+                GitHubRequests.GetAllReleasesForPackage<List<ReleaseInfo>>(
+                    registryInfo.Token, 
+                    registryInfo.AuthorName, 
+                    package.name,
+                    (releases) =>
+                    {
+                        loaded = true;
+                        package.releases = releases;
+                    });
+                
+                while (!loaded)
+                {
+                    await Task.Delay(50);
+                }
+            }
+        }
     }
 }
