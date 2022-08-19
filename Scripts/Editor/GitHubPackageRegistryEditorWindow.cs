@@ -6,8 +6,9 @@ namespace GitHubRegistryNetworking.Scripts.Editor
     using Registries;
     using UnityEditor;
     using UnityEngine;
+    using PackageInfo = Networking.DataTypes.PackageInfo;
 
-    
+
     public class GitHubPackageRegistryEditorWindow : EditorWindow
     {
         private const string WindowTitle = "GitHub Package Registry";
@@ -178,17 +179,62 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 
         private void DrawRegistry(RegistryInfo registryInfo)
         {
-            GUILayout.Label(registryInfo.AuthorName, EditorStyles.boldLabel);
+            var headerStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 18 };
+            EditorGUILayout.LabelField(registryInfo.AuthorName, headerStyle, GUILayout.ExpandWidth(true));
+
             if (GUILayout.Button("Remove (also packages)", GUILayout.Width(150), GUILayout.Height(30)))
             {
-                if (EditorUtility.DisplayDialog(
-                        "Are you sure you wanna delete this registry and all its packages?", 
-                        "Think again! You will have to reinstall everything later.", "delete", "CANCEL!!!"))
+                if (EditorUtility.DisplayDialog("Are you sure you wanna delete this registry and all its packages?", "Think again! You will have to reinstall everything later.", "delete", "CANCEL!!!"))
                 {
-                    Debug.Log("-----------------");
+                    //remove registries and its packages //todo 
                 }
-                //remove registries and its packages //todo 
             }
+            
+            DrawPackages(registryInfo);
+        }
+
+        private void DrawPackages(RegistryInfo registryInfo)
+        {
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            foreach (var package in registryInfo.Packages)
+            {
+                DrawPackage(package);
+                GUILayout.Space(5);
+            }
+            GUILayout.EndVertical();
+        }
+
+        private void DrawPackage(PackageInfo package)
+        {
+            GUILayout.BeginHorizontal(EditorStyles.helpBox);
+            if (GUILayout.Button(package.description, GUILayout.Height(30), GUILayout.Width(300)))
+            {
+                    
+            }
+
+            GUILayout.BeginVertical();
+            GUILayout.Space(5);
+            DrawPackageVersionInfo(package);
+            GUILayout.EndVertical();
+
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawPackageVersionInfo(PackageInfo package)
+        {
+            var versionTextStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 15 };
+            string installedInfo;
+            if (!package.installed)
+            {
+                installedInfo = "NOT INSTALLED";
+                versionTextStyle.normal.textColor = Color.red;
+            }
+            else
+            {
+                installedInfo = package.installedVersion;
+                versionTextStyle.normal.textColor = Color.green;
+            }
+            EditorGUILayout.LabelField(installedInfo, versionTextStyle, GUILayout.ExpandWidth(true));
         }
     }
 }

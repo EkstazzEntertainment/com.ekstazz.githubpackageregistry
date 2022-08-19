@@ -5,12 +5,12 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
 
     public class GitHubAPIHandler
     {
-        public static string BaseAPILink = "https://api.github.com/";
+        private static string BaseAPILink = "https://api.github.com/";
         
         
         public static List<Header> BuildGetHeaders(string token)
         {
-            List<Header> headers = new List<Header>()
+            List<Header> headers = new List<Header>
             {
                 new Header {Name = "Accept", Value = "application/vnd.github+json"},
                 new Header {Name = "Authorization", Value = "token " + token}
@@ -22,11 +22,12 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
         {
             var majorFolder = "user/";
             var finalPortion = "repos";
+            var parameters = "?visibility=private";
 
-            var fullLink = BaseAPILink + majorFolder + finalPortion;
+            var fullLink = BaseAPILink + majorFolder + finalPortion + parameters;
             
             return fullLink;
-        }
+        } 
 
         public static string BuildLinkForProjectReleases(string authorName, string repName)
         {
