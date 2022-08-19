@@ -181,6 +181,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             GUILayout.Label(registryInfo.AuthorName, EditorStyles.boldLabel);
             if (GUILayout.Button("Remove (also packages)", GUILayout.Width(150), GUILayout.Height(30)))
             {
+                if (EditorUtility.DisplayDialog(
+                        "Are you sure you wanna delete this registry and all its packages?", 
+                        "Think again! You will have to reinstall everything later.", "delete", "CANCEL!!!"))
+                {
+                    Debug.Log("-----------------");
+                }
                 //remove registries and its packages //todo 
             }
         }
