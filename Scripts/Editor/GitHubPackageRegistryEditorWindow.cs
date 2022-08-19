@@ -262,7 +262,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 }
             }
         }
-
+ 
         private void DrawVersionButton(ReleaseInfo release, PackageInfo package)
         {
             if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))

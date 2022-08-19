@@ -6,8 +6,8 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using DataTypes;
     using GitHubAPI;
     using Registries;
-    using UnityEngine;
 
+    
     public class RegistriesLoader
     {
         public void LoadAllRegistriesData(List<RegistryInfo> registryInfos, Action callback = null)
