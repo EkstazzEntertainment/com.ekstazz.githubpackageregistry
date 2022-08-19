@@ -2,12 +2,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
 {
     using System.Collections.Generic;
     using System.IO;
-    using Networking.GitHubAPI;
-    using Networking.Requests;
+    using Networking;
     using Registries;
     using UnityEditor;
     using UnityEngine;
 
+    
     public class GitHubPackageRegistryEditorWindow : EditorWindow
     {
         private const string WindowTitle = "GitHub Package Registry";
@@ -25,6 +25,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private bool registriesHaveLoaded = false;
         private List<RegistryInfo> registryInfos = new List<RegistryInfo>();
 
+        private RegistriesLoader registriesLoader = new RegistriesLoader();
+        
 
         [MenuItem ("Window/GitHub Package Registry Editor Window")]
         public static void ShowWindow () {
@@ -46,16 +48,19 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private void OnEnable()
         {
             LoadScopeRegistryDataBase();
-            LoadAllRegistriesData();
+            registriesLoader.LoadAllRegistriesData(registryInfos, () =>
+            {
+                registriesHaveLoaded = true;
+            });
         }
 
         private void OnGUI()
         {
             RegistryAddition();
-            // if (registriesHaveLoaded)
-            // {
+            if (registriesHaveLoaded)
+            {
                 DrawAllRegistries();
-            // }
+            }
         }
 
         private void RegistryAddition()
@@ -145,25 +150,6 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             }
         }
 
-        private void LoadAllRegistriesData()
-        {
-            foreach (var registryInfo in registryInfos)
-            {
-                LoadRegistry(registryInfo);
-            }
-
-            registriesHaveLoaded = true; //todo 
-        }
-         
-        private void LoadRegistry(RegistryInfo registryInfo)
-        {
-            Debug.Log(registryInfo.AuthorName);
-            // GitHubRequests.GetAllReleasesForPackage(registryInfo.Token, registryInfo.AuthorName, "com.ekstazz.ads");
-            GitHubRequests.GetAllPackagesForAuthor(
-                registryInfo.Token, 
-                registryInfo.AuthorName);
-        }
- 
 
         private float verticalPosition = 0;
         private void DrawAllRegistries()
