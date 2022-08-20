@@ -1,20 +1,20 @@
 namespace GitHubRegistryNetworking.Scripts.Networking
 {
     using System;
-    using System.Collections;
     using System.IO;
-    using System.Threading;
+    using System.IO.Compression;
     using DataTypes;
     using GitHubAPI;
-    using UnityEditor;
     using UnityEngine;
-    using UnityEngine.Networking;
     using PackageInfo = DataTypes.PackageInfo;
     using RegistryInfo = Registries.RegistryInfo;
 
 
     public class RepoDownloaderAndHandler
     {
+        private const string CustomPackagesFolder = "CustomPackages";
+        
+        
         public void DownloadPackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo, Action callback = null)
         {
             GitHubRequests.DownloadPackageVersion(
@@ -30,17 +30,44 @@ namespace GitHubRegistryNetworking.Scripts.Networking
 
         private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format)
         {
-            SaveToDisk(bytes, packageInfo, ".zip");
+            SaveToDisk(bytes, packageInfo, format);
+            DeCompressDownloadedZipPackage(packageInfo.name, format);
         }
 
         private void SaveToDisk(byte[] bytes, PackageInfo packageInfo, string format)
         {
-            File.WriteAllBytes(Application.persistentDataPath + "/" + packageInfo.name + format, bytes);
+            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            CreatePackagesFolder();
+            File.WriteAllBytes(BuildPackageSavePath(packageInfo.name) + format, bytes);
         }
 
-        private void DeCompressDownloadedZipPackage()
+        private void DeCompressDownloadedZipPackage(string packageName, string format)
         {
-            
+            ZipFile.ExtractToDirectory(
+                BuildPackageSavePath(packageName) + format, 
+                BuildPackageSavePath(packageName));
+        }
+
+        private string BuildPackageSavePath(string packageName)
+        {
+            return Application.persistentDataPath + "/" + CustomPackagesFolder + "/" + packageName;
+        }
+
+        private void CreatePackagesFolder()
+        {
+            var path = Application.persistentDataPath + "/" + CustomPackagesFolder;
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        private void DeleteDirectory(string directory)
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, true);
+            }
         }
     }
 }
