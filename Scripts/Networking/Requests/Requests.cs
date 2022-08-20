@@ -3,7 +3,6 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
     using System;
     using System.Collections.Generic;
     using System.Threading;
-    using DataTypes;
     using UnityEngine;
     using UnityEngine.Networking;
 
@@ -11,6 +10,15 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
     public class Requests
     {
         public void SendRequest<T>(string url, List<Header> headers, Action<T> callback = null)
+        {
+            SendRequest(url, headers, responseText =>
+            {
+                var parsedResult = ParseAndGetResult<T>(responseText);
+                callback?.Invoke(parsedResult);
+            });
+        }
+        
+        public void SendRequest(string url, List<Header> headers, Action<string> callback = null)
         {
             Debug.Log(url);
             UnityWebRequest uwr = UnityWebRequest.Get(url);
@@ -28,11 +36,15 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
             }
 
             Debug.Log(uwr.downloadHandler.text);
-            var parsedResult = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(uwr.downloadHandler.text);
+            callback?.Invoke(uwr.downloadHandler.text);
             
             uwr.Dispose();
-            
-            callback?.Invoke(parsedResult);
+        }
+
+        private T ParseAndGetResult<T>(string textToParse)
+        {
+            var parsedResult = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(textToParse);
+            return parsedResult;
         }
   
         private void AddHeadersToRequest(ref UnityWebRequest uwr, List<Header> headers)

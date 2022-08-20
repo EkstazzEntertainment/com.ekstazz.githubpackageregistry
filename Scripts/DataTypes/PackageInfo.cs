@@ -15,6 +15,7 @@ namespace GitHubRegistryNetworking.Scripts.DataTypes
         public List<ReleaseInfo> releases = new List<ReleaseInfo>();
         public bool folded = true;
 
+        
         public void GetInstalledInfo()
         {
             var packageHandler = new PackageInfoHandler();

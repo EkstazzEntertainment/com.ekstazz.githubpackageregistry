@@ -38,5 +38,15 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
             
             return fullLink;
         }
+
+        public static string BuildLinkForVersionDownload(string authorName, string repName, string version)
+        {
+            var majorFolder = "repos/";
+            var finalPortion = "zipball";
+        
+            var fullLink = BaseAPILink + majorFolder + authorName + "/" + repName + "/" + finalPortion + "/" + version;
+            
+            return fullLink;
+        }
     } 
 }

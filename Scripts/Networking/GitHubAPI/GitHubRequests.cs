@@ -22,5 +22,13 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
                 GitHubAPIHandler.BuildGetHeaders(token),
                 callback);
         }
-    }
+        
+        public static void DownloadPackageVersion(string token, string authorName, string projectName, string version, Action<string> callback = null)
+        {
+            requests.SendRequest(
+                GitHubAPIHandler.BuildLinkForVersionDownload(authorName, projectName, version),
+                GitHubAPIHandler.BuildGetHeaders(token),
+                callback);
+        }
+    } 
 }

@@ -27,7 +27,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
         private bool registriesHaveLoaded = false;
         private List<RegistryInfo> registryInfos = new List<RegistryInfo>();
 
-        private RegistriesLoader registriesLoader = new RegistriesLoader();
+        private readonly RegistriesLoader registriesLoader = new RegistriesLoader();
+        private readonly RepoDownloaderAndHandler repoDownloaderAndHandler = new RepoDownloaderAndHandler();
         
 
         [MenuItem ("Window/GitHub Package Registry Editor Window")]
@@ -200,7 +201,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             foreach (var package in registryInfo.Packages)
             {
                 DrawPackage(package);
-                DrawPackageVersions(package);
+                DrawPackageVersions(registryInfo, package);
                 GUILayout.Space(5);
             }
  
@@ -240,7 +241,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             EditorGUILayout.LabelField(installedInfo, versionTextStyle, GUILayout.ExpandWidth(true));
         }
  
-        private void DrawPackageVersions(PackageInfo package)
+        private void DrawPackageVersions(RegistryInfo registryInfo, PackageInfo package)
         {
             if (!package.folded)
             {
@@ -256,27 +257,30 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                         GUI.backgroundColor = Color.cyan;
                     }
                     
-                    DrawVersionButton(release, package);
+                    DrawVersionButton(registryInfo, release, package);
                     
                     GUI.backgroundColor = color;
                 }
             }
         }
  
-        private void DrawVersionButton(ReleaseInfo release, PackageInfo package)
+        private void DrawVersionButton(RegistryInfo registryInfo, ReleaseInfo release, PackageInfo package)
         {
             if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
             {
                 if (EditorUtility.DisplayDialog($"Install version {release.tag_name}?", "", "Install", "CANCEL!!!"))
                 {
-                    InstallPackageVersion(package, release);
+                    InstallPackageVersion(registryInfo, package, release);
                 }
             }
         }
 
-        private void InstallPackageVersion(PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        private void InstallPackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo)
         {
-            
+            repoDownloaderAndHandler.DownloadPackageVersion(registryInfo, packageInfo, releaseInfo, () =>
+            {
+                
+            });
         }
     }
 }
