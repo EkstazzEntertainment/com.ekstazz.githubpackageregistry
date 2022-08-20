@@ -23,9 +23,9 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
                 callback);
         }
         
-        public static void DownloadPackageVersion(string token, string authorName, string projectName, string version, Action<string> callback = null)
+        public static void DownloadPackageVersion(string token, string authorName, string projectName, string version, Action<byte[]> callback = null)
         {
-            requests.SendRequest(
+            requests.SendRequestAndDownload(
                 GitHubAPIHandler.BuildLinkForVersionDownload(authorName, projectName, version),
                 GitHubAPIHandler.BuildGetHeaders(token),
                 callback);

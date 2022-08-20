@@ -11,14 +11,22 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
     {
         public void SendRequest<T>(string url, List<Header> headers, Action<T> callback = null)
         {
-            SendRequest(url, headers, responseText =>
+            SendRequest(url, headers, (text, bytes) =>
             {
-                var parsedResult = ParseAndGetResult<T>(responseText);
+                var parsedResult = ParseAndGetResult<T>(text);
                 callback?.Invoke(parsedResult);
             });
         }
         
-        public void SendRequest(string url, List<Header> headers, Action<string> callback = null)
+        public void SendRequestAndDownload(string url, List<Header> headers, Action<byte[]> callback = null)
+        {
+            SendRequest(url, headers, (text, bytes) =>
+            {
+                callback?.Invoke(bytes);
+            });
+        }
+        
+        public void SendRequest(string url, List<Header> headers, Action<string, byte[]> callback = null)
         {
             Debug.Log(url);
             UnityWebRequest uwr = UnityWebRequest.Get(url);
@@ -34,9 +42,10 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
             {
                 Debug.Log("ERROR: " + uwr.result);
             }
-
-            Debug.Log(uwr.downloadHandler.text);
-            callback?.Invoke(uwr.downloadHandler.text);
+            else
+            {
+                callback?.Invoke(uwr.downloadHandler.text, uwr.downloadHandler.data);
+            }
             
             uwr.Dispose();
         }
@@ -46,7 +55,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking.Requests
             var parsedResult = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(textToParse);
             return parsedResult;
         }
-  
+        
         private void AddHeadersToRequest(ref UnityWebRequest uwr, List<Header> headers)
         {
             foreach (var header in headers)
