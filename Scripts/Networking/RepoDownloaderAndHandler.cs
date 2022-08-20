@@ -3,6 +3,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using System;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
     using DataTypes;
     using GitHubAPI;
     using UnityEngine;
@@ -46,11 +47,18 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             ZipFile.ExtractToDirectory(
                 BuildPackageSavePath(packageName) + format, 
                 BuildPackageSavePath(packageName));
+            RenameExtractedFile(packageName);
         }
 
         private string BuildPackageSavePath(string packageName)
         {
             return Application.persistentDataPath + "/" + CustomPackagesFolder + "/" + packageName;
+        }
+
+        private void RenameExtractedFile(string packageName)
+        {
+            var files = Directory.EnumerateDirectories(BuildPackageSavePath(packageName)).ToList();
+            Directory.Move(files.First(), BuildPackageSavePath(packageName) + "/" + packageName);
         }
 
         private void CreatePackagesFolder()
