@@ -4,6 +4,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Threading;
     using DataTypes;
     using GitHubAPI;
     using UnityEditor;
@@ -78,13 +79,17 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {  
             var link = BuildPackageSavePath(packageName) + "/" + packageName;
             MovePackageTemporarilyToAssets(packageName);
-            ExportPackageOptions exportFlags = ExportPackageOptions.Default | ExportPackageOptions.Interactive | ExportPackageOptions.Recurse;
-            await Task.Delay(10000);
+            AssetDatabase.Refresh();
+            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                await Task.Delay(100);
+            }
             AssetDatabase.ExportPackage(
-                "Assets/com.ekstazz.ads", 
-                "Assets/com.ekstazz.ads.unitypackage", 
+                $"Assets/{packageName}", 
+                $"Assets/{packageName}.unitypackage", 
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
             DeleteOldUndeletedDirectories(packageName);
+            AssetDatabase.Refresh();
         }
   
         private void MovePackageTemporarilyToAssets(string packageName)
