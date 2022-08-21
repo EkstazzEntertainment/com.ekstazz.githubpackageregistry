@@ -73,14 +73,17 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             var files = Directory.EnumerateDirectories(BuildPackageSavePath(packageName)).ToList();
             Directory.Move(files.First(), BuildPackageSavePath(packageName) + "/" + packageName);
         }
- 
+  
         private async void ImportExtractedPackage(string packageName)
-        { 
+        {  
             var link = BuildPackageSavePath(packageName) + "/" + packageName;
             MovePackageTemporarilyToAssets(packageName);
             ExportPackageOptions exportFlags = ExportPackageOptions.Default | ExportPackageOptions.Interactive | ExportPackageOptions.Recurse;
             await Task.Delay(10000);
-            AssetDatabase.ExportPackage("Assets/com.ekstazz.ads", "Assets/com.ekstazz.ads.unitypackage", ExportPackageOptions.IncludeLibraryAssets | ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse | ExportPackageOptions.Interactive);
+            AssetDatabase.ExportPackage(
+                "Assets/com.ekstazz.ads", 
+                "Assets/com.ekstazz.ads.unitypackage", 
+                ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
             DeleteOldUndeletedDirectories(packageName);
         }
   
