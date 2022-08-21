@@ -92,12 +92,13 @@ namespace GitHubRegistryNetworking.Scripts.Networking
 
             DeleteDirectory("Assets/" + packageName);
             DeleteFile("Assets/" + packageName + ".meta");
-            
+
             callback.Invoke();
         }
 
-        private void ImportUnityPackage(string packageName)
+        private async void ImportUnityPackage(string packageName)
         {
+            await Task.Delay(1);
             AssetDatabase.ImportPackage(BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", false);
             DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
         }
