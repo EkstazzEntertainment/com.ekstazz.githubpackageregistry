@@ -6,9 +6,12 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using System.Linq;
     using DataTypes;
     using GitHubAPI;
+    using UnityEditor;
+    using UnityEditor.VersionControl;
     using UnityEngine;
     using PackageInfo = DataTypes.PackageInfo;
     using RegistryInfo = Registries.RegistryInfo;
+    using Task = System.Threading.Tasks.Task;
 
 
     public class RepoDownloaderAndHandler
@@ -33,13 +36,23 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {
             SaveToDisk(bytes, packageInfo, format);
             DeCompressDownloadedZipPackage(packageInfo.name, format);
+            ImportExtractedPackage(packageInfo.name);
         }
 
         private void SaveToDisk(byte[] bytes, PackageInfo packageInfo, string format)
         {
-            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            DeleteOldUndeletedDirectories(packageInfo.name);
+            
             CreatePackagesFolder();
             File.WriteAllBytes(BuildPackageSavePath(packageInfo.name) + format, bytes);
+        }
+
+        private void DeleteOldUndeletedDirectories(string packageName)
+        {
+            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            DeleteDirectory("Assets/" + packageName);
+            DeleteFile("Assets/" + packageName + ".meta");
+            // DeleteFile("Assets/" + packageName + ".unitypackage");
         }
 
         private void DeCompressDownloadedZipPackage(string packageName, string format)
@@ -49,7 +62,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
                 BuildPackageSavePath(packageName));
             RenameExtractedFile(packageName);
         }
-
+ 
         private string BuildPackageSavePath(string packageName)
         {
             return Application.persistentDataPath + "/" + CustomPackagesFolder + "/" + packageName;
@@ -59,6 +72,22 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {
             var files = Directory.EnumerateDirectories(BuildPackageSavePath(packageName)).ToList();
             Directory.Move(files.First(), BuildPackageSavePath(packageName) + "/" + packageName);
+        }
+ 
+        private async void ImportExtractedPackage(string packageName)
+        { 
+            var link = BuildPackageSavePath(packageName) + "/" + packageName;
+            MovePackageTemporarilyToAssets(packageName);
+            ExportPackageOptions exportFlags = ExportPackageOptions.Default | ExportPackageOptions.Interactive | ExportPackageOptions.Recurse;
+            await Task.Delay(10000);
+            AssetDatabase.ExportPackage("Assets/com.ekstazz.ads", "Assets/com.ekstazz.ads.unitypackage", ExportPackageOptions.IncludeLibraryAssets | ExportPackageOptions.IncludeDependencies | ExportPackageOptions.Recurse | ExportPackageOptions.Interactive);
+            DeleteOldUndeletedDirectories(packageName);
+        }
+  
+        private void MovePackageTemporarilyToAssets(string packageName)
+        {
+            var link = BuildPackageSavePath(packageName) + "/" + packageName;
+            Directory.Move(link, "Assets/" + packageName);
         }
 
         private void CreatePackagesFolder()
@@ -75,6 +104,14 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             if (Directory.Exists(directory))
             {
                 Directory.Delete(directory, true);
+            }
+        }
+
+        private void DeleteFile(string directory)
+        {
+            if (File.Exists(directory))
+            {
+                File.Delete(directory);
             }
         }
     }
