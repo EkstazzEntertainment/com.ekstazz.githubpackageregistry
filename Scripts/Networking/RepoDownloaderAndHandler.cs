@@ -1,6 +1,8 @@
 namespace GitHubRegistryNetworking.Scripts.Networking
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -8,6 +10,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
     using DataTypes;
     using GitHubAPI;
     using UnityEditor;
+    using UnityEditor.PackageManager;
     using UnityEditor.VersionControl;
     using UnityEngine;
     using PackageInfo = DataTypes.PackageInfo;
@@ -37,23 +40,20 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {
             SaveToDisk(bytes, packageInfo, format);
             DeCompressDownloadedZipPackage(packageInfo.name, format);
-            ImportExtractedPackage(packageInfo.name);
+            ExportExtractedPackageToUnityPackage(packageInfo.name, () =>
+            {
+                ImportUnityPackage(packageInfo.name);
+            });
         }
 
         private void SaveToDisk(byte[] bytes, PackageInfo packageInfo, string format)
         {
-            DeleteOldUndeletedDirectories(packageInfo.name);
+            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            DeleteDirectory("Assets/" + packageInfo.name);
+            DeleteFile("Assets/" + packageInfo.name + ".meta");
             
             CreatePackagesFolder();
             File.WriteAllBytes(BuildPackageSavePath(packageInfo.name) + format, bytes);
-        }
-
-        private void DeleteOldUndeletedDirectories(string packageName)
-        {
-            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
-            DeleteDirectory("Assets/" + packageName);
-            DeleteFile("Assets/" + packageName + ".meta");
-            // DeleteFile("Assets/" + packageName + ".unitypackage");
         }
 
         private void DeCompressDownloadedZipPackage(string packageName, string format)
@@ -75,7 +75,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             Directory.Move(files.First(), BuildPackageSavePath(packageName) + "/" + packageName);
         }
   
-        private async void ImportExtractedPackage(string packageName)
+        private async void ExportExtractedPackageToUnityPackage(string packageName, Action callback)
         {  
             var link = BuildPackageSavePath(packageName) + "/" + packageName;
             MovePackageTemporarilyToAssets(packageName);
@@ -84,12 +84,22 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             {
                 await Task.Delay(100);
             }
+            
             AssetDatabase.ExportPackage(
                 $"Assets/{packageName}", 
-                $"Assets/{packageName}.unitypackage", 
+                BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", 
                 ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
-            DeleteOldUndeletedDirectories(packageName);
-            AssetDatabase.Refresh();
+
+            DeleteDirectory("Assets/" + packageName);
+            DeleteFile("Assets/" + packageName + ".meta");
+            
+            callback.Invoke();
+        }
+
+        private void ImportUnityPackage(string packageName)
+        {
+            AssetDatabase.ImportPackage(BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", false);
+            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
         }
   
         private void MovePackageTemporarilyToAssets(string packageName)
