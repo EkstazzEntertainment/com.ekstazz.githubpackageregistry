@@ -190,7 +190,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             {
                 if (EditorUtility.DisplayDialog("Are you sure you wanna delete this registry and all its packages?", "Think again! You will have to reinstall everything later.", "delete", "CANCEL!!!"))
                 {
-                    //remove registries and its packages //todo 
+                    RemoveRegistryAndItsPackages();
                 }
             }
             
@@ -274,7 +274,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 {
                     if (EditorUtility.DisplayDialog($"REMOVE PACKAGE {release.tag_name}?", "ARE YOU SURE BUDDY?", "remove", "CANCEL!!!"))
                     {
-                        RemovePackageVersion(registryInfo, package, release);
+                        RemovePackageVersion(package, release);
                     }
                 }
             }
@@ -298,10 +298,15 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             });
         }
 
-        private void RemovePackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        private void RemovePackageVersion(PackageInfo packageInfo, ReleaseInfo releaseInfo = null)
         {
-            repoDownloaderAndHandler.RemovePackageVersion(registryInfo, packageInfo, releaseInfo);
+            repoDownloaderAndHandler.RemovePackageVersion(packageInfo, releaseInfo);
             LoadData();
+        }
+
+        private void RemoveRegistryAndItsPackages()
+        {
+            
         }
     }
 }

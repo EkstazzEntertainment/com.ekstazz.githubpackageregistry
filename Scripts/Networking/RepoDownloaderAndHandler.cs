@@ -33,7 +33,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
                             });
         }
 
-        public void RemovePackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        public void RemovePackageVersion(PackageInfo packageInfo, ReleaseInfo releaseInfo)
         {
             CleanUpOldVersions(packageInfo.name, releaseInfo.tag_name);
         }
