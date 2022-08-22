@@ -190,7 +190,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             {
                 if (EditorUtility.DisplayDialog("Are you sure you wanna delete this registry and all its packages?", "Think again! You will have to reinstall everything later.", "delete", "CANCEL!!!"))
                 {
-                    RemoveRegistryAndItsPackages();
+                    RemoveRegistryAndItsPackages(registryInfo);
                 }
             }
             
@@ -304,9 +304,10 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             LoadData();
         }
 
-        private void RemoveRegistryAndItsPackages()
+        private void RemoveRegistryAndItsPackages(RegistryInfo registryInfo)
         {
-            
+            repoDownloaderAndHandler.RemoveRegistryAndItsPackages(registryInfo);
+            LoadData();
         }
     }
 }

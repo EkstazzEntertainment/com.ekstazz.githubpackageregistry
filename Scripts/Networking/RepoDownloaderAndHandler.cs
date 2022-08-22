@@ -37,6 +37,14 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {
             CleanUpOldVersions(packageInfo.name, releaseInfo.tag_name);
         }
+
+        public void RemoveRegistryAndItsPackages(RegistryInfo registryInfo)
+        {
+            foreach (var packageInfo in registryInfo.Packages)
+            {
+                CleanUpOldVersions(packageInfo.name, null);
+            }
+        }
         
         private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format, string version)
         {
