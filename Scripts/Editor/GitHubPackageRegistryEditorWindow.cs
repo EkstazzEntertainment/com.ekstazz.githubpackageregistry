@@ -114,6 +114,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 
                 Debug.Log("No Scope Registry DataBase has been found. Creating a new one.");
                 CreateAScopeRegistryDataBase();
+                
+                LoadData();
             }
             
             AssetDatabase.Refresh();
