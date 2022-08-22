@@ -1,17 +1,13 @@
 namespace GitHubRegistryNetworking.Scripts.Networking
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
-    using System.Threading;
     using DataTypes;
     using GitHubAPI;
+    using Newtonsoft.Json;
     using UnityEditor;
-    using UnityEditor.PackageManager;
-    using UnityEditor.VersionControl;
     using UnityEngine;
     using PackageInfo = DataTypes.PackageInfo;
     using RegistryInfo = Registries.RegistryInfo;
@@ -32,18 +28,18 @@ namespace GitHubRegistryNetworking.Scripts.Networking
                             releaseInfo.tag_name,
                             (bytes) =>
                             {
-                                HandleDownloadedPackage(bytes, packageInfo, ".zip");
+                                HandleDownloadedPackage(bytes, packageInfo, ".zip", releaseInfo.tag_name);
                             });
         }
 
-        private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format)
+        private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format, string version)
         {
             SaveToDisk(bytes, packageInfo, format);
             DeCompressDownloadedZipPackage(packageInfo.name, format);
             ExportExtractedPackageToUnityPackage(packageInfo.name, () =>
             {
-                ImportUnityPackage(packageInfo.name);
-            });
+                ImportUnityPackage(packageInfo.name, version);
+            }); 
         }
 
         private void SaveToDisk(byte[] bytes, PackageInfo packageInfo, string format)
@@ -77,7 +73,6 @@ namespace GitHubRegistryNetworking.Scripts.Networking
   
         private async void ExportExtractedPackageToUnityPackage(string packageName, Action callback)
         {  
-            var link = BuildPackageSavePath(packageName) + "/" + packageName;
             MovePackageTemporarilyToAssets(packageName);
             AssetDatabase.Refresh();
             while (EditorApplication.isCompiling || EditorApplication.isUpdating)
@@ -96,17 +91,48 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             callback.Invoke();
         }
 
-        private async void ImportUnityPackage(string packageName)
+        private async void ImportUnityPackage(string packageName, string version)
         {
             await Task.Delay(1);
             AssetDatabase.ImportPackage(BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", false);
             DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            
+            AssetDatabase.Refresh();
+            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                await Task.Delay(100);
+            }
+            
+            MoveToPackagesFolder(packageName);
+
+            AddToManifest(packageName, version);
+
+            AssetDatabase.Refresh();
+            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                await Task.Delay(100);
+            }
         }
-  
+
+        private void AddToManifest(string packageName, string version)
+        {
+            string jsonText = File.ReadAllText($"Packages/manifest.json");
+            var parsedResult = Newtonsoft.Json.JsonConvert.DeserializeObject<ManifestJson>(jsonText);
+            parsedResult?.dependencies.Add(packageName, version);
+            var serializedText = Newtonsoft.Json.JsonConvert.SerializeObject(parsedResult, Formatting.Indented);
+            File.WriteAllText("Packages/manifest.json", serializedText);
+        }
+   
         private void MovePackageTemporarilyToAssets(string packageName)
         {
             var link = BuildPackageSavePath(packageName) + "/" + packageName;
             Directory.Move(link, "Assets/" + packageName);
+        }
+
+        private void MoveToPackagesFolder(string packageName)
+        {
+            Directory.Move("Assets/" + packageName, "Packages/" + packageName);
+            File.Move("Assets/" + packageName + ".meta", "Packages/" + packageName + ".meta");
         }
 
         private void CreatePackagesFolder()

@@ -16,7 +16,7 @@ namespace GitHubRegistryNetworking.Scripts.DataTypes
         public bool folded = true;
 
         
-        public void GetInstalledInfo()
+        public string GetInstalledInfo()
         {
             var packageHandler = new PackageInfoHandler();
             installed = packageHandler.CheckIfPackageIsInstalled(name);
@@ -24,6 +24,8 @@ namespace GitHubRegistryNetworking.Scripts.DataTypes
             {
                 installedVersion = packageHandler.GetInstalledVersion(name);
             }
+
+            return installedVersion;
         }
     }
 
