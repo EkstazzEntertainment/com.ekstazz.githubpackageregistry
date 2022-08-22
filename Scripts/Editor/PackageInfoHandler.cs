@@ -12,7 +12,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             string jsonText = File.ReadAllText("Packages/manifest.json");
             return jsonText.Contains(packageName);
         }
-
+ 
         public string GetInstalledVersion(string packageName)
         {
             string jsonText = File.ReadAllText($"Packages/{packageName}/package.json");
