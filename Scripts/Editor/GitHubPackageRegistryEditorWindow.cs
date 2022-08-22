@@ -144,6 +144,8 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             {
                 return;
             }
+
+            registryInfos = new List<RegistryInfo>();
              
             string[] filePaths = Directory.GetFiles(ScopeRegistryDataBasePath, "*.txt", SearchOption.TopDirectoryOnly);
             foreach (var path in filePaths)
@@ -250,7 +252,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                     var color = GUI.backgroundColor;
                     if (package.installedVersion != release.tag_name)
                     {
-                        GUI.backgroundColor = Color.cyan;
+                        GUI.backgroundColor = Color.blue;
                     }
                     else
                     {
@@ -266,11 +268,24 @@ namespace GitHubRegistryNetworking.Scripts.Editor
  
         private void DrawVersionButton(RegistryInfo registryInfo, ReleaseInfo release, PackageInfo package)
         {
-            if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
+            if (package.installedVersion == release.tag_name)
             {
-                if (EditorUtility.DisplayDialog($"Install version {release.tag_name}?", "", "Install", "CANCEL!!!"))
+                if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
                 {
-                    InstallPackageVersion(registryInfo, package, release);
+                    if (EditorUtility.DisplayDialog($"REMOVE PACKAGE {release.tag_name}?", "ARE YOU SURE BUDDY?", "remove", "CANCEL!!!"))
+                    {
+                        RemovePackageVersion(registryInfo, package, release);
+                    }
+                }
+            }
+            else
+            {
+                if (GUILayout.Button(release.tag_name, GUILayout.Width(300)))
+                {
+                    if (EditorUtility.DisplayDialog($"Install version {release.tag_name}?", "", "Install", "CANCEL!!!"))
+                    {
+                        InstallPackageVersion(registryInfo, package, release);
+                    }
                 }
             }
         }
@@ -281,6 +296,12 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             {
                 
             });
+        }
+
+        private void RemovePackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        {
+            repoDownloaderAndHandler.RemovePackageVersion(registryInfo, packageInfo, releaseInfo);
+            LoadData();
         }
     }
 }

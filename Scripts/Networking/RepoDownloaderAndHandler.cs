@@ -21,6 +21,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         
         public void DownloadPackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo, Action callback = null)
         {
+            CleanUpOldVersions(packageInfo.name, releaseInfo.tag_name);
             GitHubRequests.DownloadPackageVersion(
                             registryInfo.Token, 
                             registryInfo.AuthorName, 
@@ -32,6 +33,11 @@ namespace GitHubRegistryNetworking.Scripts.Networking
                             });
         }
 
+        public void RemovePackageVersion(RegistryInfo registryInfo, PackageInfo packageInfo, ReleaseInfo releaseInfo)
+        {
+            CleanUpOldVersions(packageInfo.name, releaseInfo.tag_name);
+        }
+        
         private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format, string version)
         {
             SaveToDisk(bytes, packageInfo, format);
@@ -91,6 +97,13 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             callback.Invoke();
         }
 
+        private void CleanUpOldVersions(string packageName, string version)
+        {
+            DeleteDirectory("Packages/" + packageName);
+            DeleteFile("Packages/" + packageName + ".meta");
+            AddOrRemoveFromManifest(false, packageName, version);
+        }
+
         private async void ImportUnityPackage(string packageName, string version)
         {
             await Task.Delay(1);
@@ -105,7 +118,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             
             MoveToPackagesFolder(packageName);
 
-            AddToManifest(packageName, version);
+            AddOrRemoveFromManifest(true, packageName, version);
 
             AssetDatabase.Refresh();
             while (EditorApplication.isCompiling || EditorApplication.isUpdating)
@@ -114,13 +127,30 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             }
         }
 
-        private void AddToManifest(string packageName, string version)
+        private void AddOrRemoveFromManifest(bool add, string packageName, string version)
         {
-            string jsonText = File.ReadAllText($"Packages/manifest.json");
-            var parsedResult = Newtonsoft.Json.JsonConvert.DeserializeObject<ManifestJson>(jsonText);
-            parsedResult?.dependencies.Add(packageName, version);
-            var serializedText = Newtonsoft.Json.JsonConvert.SerializeObject(parsedResult, Formatting.Indented);
-            File.WriteAllText("Packages/manifest.json", serializedText);
+            ParseTxtIntoType("Packages/manifest.json", out ManifestJson parsedResult);
+            if (add)
+            {
+                parsedResult?.dependencies.Add(packageName, version);
+            }
+            else
+            {
+                parsedResult?.dependencies.Remove(packageName);
+            }
+            SerializeJsonIntoText("Packages/manifest.json", parsedResult);
+        }
+
+        private void ParseTxtIntoType<T>(string txtPath, out T parsedResult)
+        {
+            string jsonText = File.ReadAllText(txtPath);
+            parsedResult = JsonConvert.DeserializeObject<T>(jsonText);
+        }
+
+        private void SerializeJsonIntoText(string path, object obj)
+        {
+            var serializedText = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            File.WriteAllText(path, serializedText);
         }
    
         private void MovePackageTemporarilyToAssets(string packageName)
