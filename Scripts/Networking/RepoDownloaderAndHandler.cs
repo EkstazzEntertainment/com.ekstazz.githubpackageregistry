@@ -44,6 +44,8 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             {
                 CleanUpOldVersions(packageInfo.name, null);
             }
+            DeleteFile(registryInfo.CachedDataBasePath);
+            AssetDatabase.Refresh();
         }
         
         private void HandleDownloadedPackage(byte[] bytes, PackageInfo packageInfo, string format, string version)

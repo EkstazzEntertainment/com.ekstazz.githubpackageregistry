@@ -154,7 +154,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 var httpLink = reader.ReadLine();
                 var ownerName = reader.ReadLine();
                 var token = reader.ReadLine();
-                var registryInfo = new RegistryInfo { RepositoryLink = httpLink, AuthorName = ownerName, Token = token};
+                var registryInfo = new RegistryInfo { CachedDataBasePath = path, RepositoryLink = httpLink, AuthorName = ownerName, Token = token};
                 registryInfos.Add(registryInfo);
                 reader.Close();
             }
