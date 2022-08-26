@@ -91,18 +91,18 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         {  
             MovePackageTemporarilyToAssets(packageName);
             AssetDatabase.Refresh();
-            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
-            {
-                await Task.Delay(100);
-            }
-            
-            AssetDatabase.ExportPackage(
-                $"Assets/{packageName}", 
-                BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", 
-                ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
-
-            DeleteDirectory("Assets/" + packageName);
-            DeleteFile("Assets/" + packageName + ".meta");
+            // while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            // {
+            //     await Task.Delay(1000);
+            // }
+            //
+            // AssetDatabase.ExportPackage(
+            //     $"Assets/{packageName}", 
+            //     BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", 
+            //     ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+            //
+            // DeleteDirectory("Assets/" + packageName);
+            // DeleteFile("Assets/" + packageName + ".meta");
 
             callback.Invoke();
         }
@@ -117,15 +117,15 @@ namespace GitHubRegistryNetworking.Scripts.Networking
         private async void ImportUnityPackage(string packageName, string version)
         {
             await Task.Delay(1);
-            AssetDatabase.ImportPackage(BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", false);
-            DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
-            
-            AssetDatabase.Refresh();
-            while (EditorApplication.isCompiling || EditorApplication.isUpdating)
-            {
-                await Task.Delay(100);
-            }
-            
+            // AssetDatabase.ImportPackage(BuildPackageSavePath(packageName) + $"/{packageName}.unitypackage", false);
+            // DeleteDirectory(Application.persistentDataPath + "/" + CustomPackagesFolder);
+            //
+            // AssetDatabase.Refresh();
+            // while (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            // {
+            //     await Task.Delay(100);
+            // }
+
             MoveToPackagesFolder(packageName);
 
             AddOrRemoveFromManifest(true, packageName, version);
