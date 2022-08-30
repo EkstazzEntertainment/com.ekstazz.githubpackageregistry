@@ -22,7 +22,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking.GitHubAPI
         {
             var majorFolder = "user/";
             var finalPortion = "repos";
-            var parameters = "?visibility=private";
+            var parameters = "?visibility=private&per_page=100";
 
             var fullLink = BaseAPILink + majorFolder + finalPortion + parameters;
             
