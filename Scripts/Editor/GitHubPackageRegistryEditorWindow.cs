@@ -138,6 +138,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             var token1 = accessToken.Substring(0, dividePos);
             var token2 = accessToken.Substring(dividePos, accessToken.Length - dividePos);
             writer.WriteLine(token1);
+            writer.WriteLine("--------------");
             writer.WriteLine(token2);
             writer.Close();
 
@@ -160,6 +161,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
                 var httpLink = reader.ReadLine();
                 var ownerName = reader.ReadLine();
                 var token1 = reader.ReadLine();
+                var separator = reader.ReadLine();
                 var token2 = reader.ReadLine();
                 var registryInfo = new RegistryInfo { CachedDataBasePath = path, RepositoryLink = httpLink, AuthorName = ownerName, Token = token1 + token2};
                 registryInfos.Add(registryInfo);
