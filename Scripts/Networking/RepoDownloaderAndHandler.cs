@@ -1,5 +1,6 @@
 namespace GitHubRegistryNetworking.Scripts.Networking
 {
+#if UNITY_EDITOR
     using System;
     using System.IO;
     using System.IO.Compression;
@@ -200,4 +201,7 @@ namespace GitHubRegistryNetworking.Scripts.Networking
             }
         }
     }
+    
+#endif
+
 }
