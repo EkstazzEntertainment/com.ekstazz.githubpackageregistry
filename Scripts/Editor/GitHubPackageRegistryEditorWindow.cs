@@ -1,5 +1,7 @@
 namespace GitHubRegistryNetworking.Scripts.Editor
 {
+#if UNITY_EDITOR
+
     using System.Collections.Generic;
     using System.IO;
     using DataTypes;
@@ -319,4 +321,7 @@ namespace GitHubRegistryNetworking.Scripts.Editor
             LoadData();
         }
     }
+    
+#endif
+    
 }
